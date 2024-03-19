@@ -17,7 +17,7 @@ window.addEventListener('load', async () => {
 });
 
 // Contract Address
-const contractAddress = "0x19365005A38457ff7aA5dce8452A0d768Eb637e3";
+const contractAddress = "0xb9421be1f098857f22b25924878d8835b40f4441e0ef333d78028e8457371b13";
 
 // Contract ABI (Application Binary Interface)
 const contractABI = [
