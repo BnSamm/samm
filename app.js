@@ -21,7 +21,89 @@ const contractAddress = "0x19365005A38457ff7aA5dce8452A0d768Eb637e3";
 
 // Contract ABI (Application Binary Interface)
 const contractABI = [
-    // Your contract ABI here...
+    {
+        "inputs": [],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "player",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "result",
+                "type": "bool"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amountWon",
+                "type": "uint256"
+            }
+        ],
+        "name": "CoinFlipped",
+        "type": "event"
+    },
+    {
+        "inputs": [],
+        "name": "flipCoin",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "withdrawContractBalance",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "withdrawWinnings",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "balance",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "winnings",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
 ];
 
 // Contract Instance
@@ -30,10 +112,10 @@ const contract = new web3.eth.Contract(contractABI, contractAddress);
 // Send Funds to Contract
 document.getElementById('sendFundsBtn').addEventListener('click', async () => {
     try {
-        // Prompt the user for the amount to spend
-        const amount = prompt("Enter the amount to spend:");
-        if (amount === null || isNaN(amount) || amount <= 0) {
-            throw new Error("Invalid amount");
+        // Get the token amount entered by the user
+        const tokenAmount = document.getElementById('tokenAmount').value.trim();
+        if (!tokenAmount || isNaN(tokenAmount) || tokenAmount <= 0) {
+            throw new Error("Invalid token amount");
         }
 
         // Send funds to the contract
@@ -42,7 +124,7 @@ document.getElementById('sendFundsBtn').addEventListener('click', async () => {
             params: [{
                 to: contractAddress,
                 from: window.ethereum.selectedAddress,
-                value: web3.utils.toWei(amount, "ether")
+                value: web3.utils.toWei(tokenAmount, "ether") // Assuming token is in ether, adjust as necessary
             }]
         });
         console.log("Funds sent to contract");
