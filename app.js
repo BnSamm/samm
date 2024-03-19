@@ -30,12 +30,19 @@ const contract = new web3.eth.Contract(contractABI, contractAddress);
 // Send Funds to Contract
 document.getElementById('sendFundsBtn').addEventListener('click', async () => {
     try {
+        // Prompt the user for the amount to spend
+        const amount = prompt("Enter the amount to spend:");
+        if (amount === null || isNaN(amount) || amount <= 0) {
+            throw new Error("Invalid amount");
+        }
+
+        // Send funds to the contract
         await window.ethereum.request({
             method: 'eth_sendTransaction',
             params: [{
                 to: contractAddress,
                 from: window.ethereum.selectedAddress,
-                value: web3.utils.toWei("0.1", "ether")
+                value: web3.utils.toWei(amount, "ether")
             }]
         });
         console.log("Funds sent to contract");
@@ -47,24 +54,18 @@ document.getElementById('sendFundsBtn').addEventListener('click', async () => {
 // Flip Coin
 document.getElementById('flipCoinBtn').addEventListener('click', async () => {
     try {
-        await contract.methods.flipCoin().send({ from: window.ethereum.selectedAddress, value: web3.utils.toWei("0.1", "ether") });
-        console.log("Coin flipped");
-        // Display result
-        const resultElement = document.getElementById('result');
-        const randomNumber = Math.floor(Math.random() * 2);
-        if (randomNumber === 0) {
-            resultElement.textContent = "You win!";
-        } else {
-            resultElement.textContent = "Sorry, you lost!";
-        }
+        // Send transaction to initialize the flip
+        await contract.methods.flipCoin().send({ from: window.ethereum.selectedAddress });
+        console.log("Coin flip initialized");
     } catch (error) {
-        console.error("Error flipping coin:", error);
+        console.error("Error initializing coin flip:", error);
     }
 });
 
 // Withdraw Winnings
 document.getElementById('withdrawBtn').addEventListener('click', async () => {
     try {
+        // Withdraw winnings from the contract
         await contract.methods.withdrawWinnings().send({ from: window.ethereum.selectedAddress });
         console.log("Winnings withdrawn");
     } catch (error) {
