@@ -17,93 +17,11 @@ window.addEventListener('load', async () => {
 });
 
 // Contract Address
-const contractAddress = "0xb9421be1f098857f22b25924878d8835b40f4441e0ef333d78028e8457371b13";
+const contractAddress = "0x19365005A38457ff7aA5dce8452A0d768Eb637e3";
 
 // Contract ABI (Application Binary Interface)
 const contractABI = [
-    {
-        "inputs": [],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "player",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "bool",
-                "name": "result",
-                "type": "bool"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amountWon",
-                "type": "uint256"
-            }
-        ],
-        "name": "CoinFlipped",
-        "type": "event"
-    },
-    {
-        "inputs": [],
-        "name": "flipCoin",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "withdrawContractBalance",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "withdrawWinnings",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "balance",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "name": "winnings",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    }
+    // Your contract ABI here...
 ];
 
 // Contract Instance
@@ -112,19 +30,12 @@ const contract = new web3.eth.Contract(contractABI, contractAddress);
 // Send Funds to Contract
 document.getElementById('sendFundsBtn').addEventListener('click', async () => {
     try {
-        // Get the token amount entered by the user
-        const tokenAmount = document.getElementById('tokenAmount').value.trim();
-        if (!tokenAmount || isNaN(tokenAmount) || tokenAmount <= 0) {
-            throw new Error("Invalid token amount");
-        }
-
-        // Send funds to the contract
         await window.ethereum.request({
             method: 'eth_sendTransaction',
             params: [{
                 to: contractAddress,
                 from: window.ethereum.selectedAddress,
-                value: web3.utils.toWei(tokenAmount, "ether") // Assuming token is in ether, adjust as necessary
+                value: web3.utils.toWei("0.1", "ether")
             }]
         });
         console.log("Funds sent to contract");
@@ -136,18 +47,24 @@ document.getElementById('sendFundsBtn').addEventListener('click', async () => {
 // Flip Coin
 document.getElementById('flipCoinBtn').addEventListener('click', async () => {
     try {
-        // Send transaction to initialize the flip
-        await contract.methods.flipCoin().send({ from: window.ethereum.selectedAddress });
-        console.log("Coin flip initialized");
+        await contract.methods.flipCoin().send({ from: window.ethereum.selectedAddress, value: web3.utils.toWei("0.1", "ether") });
+        console.log("Coin flipped");
+        // Display result
+        const resultElement = document.getElementById('result');
+        const randomNumber = Math.floor(Math.random() * 2);
+        if (randomNumber === 0) {
+            resultElement.textContent = "You win!";
+        } else {
+            resultElement.textContent = "Sorry, you lost!";
+        }
     } catch (error) {
-        console.error("Error initializing coin flip:", error);
+        console.error("Error flipping coin:", error);
     }
 });
 
 // Withdraw Winnings
 document.getElementById('withdrawBtn').addEventListener('click', async () => {
     try {
-        // Withdraw winnings from the contract
         await contract.methods.withdrawWinnings().send({ from: window.ethereum.selectedAddress });
         console.log("Winnings withdrawn");
     } catch (error) {
